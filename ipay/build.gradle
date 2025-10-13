@@ -1,6 +1,7 @@
 plugins {
     id 'com.android.library'
     id 'org.jetbrains.kotlin.android'
+    id 'maven-publish'
 }
 
 android {
@@ -28,6 +29,28 @@ android {
         jvmTarget = '17'
     }
     namespace 'com.robining.games.ipay'
+}
+
+afterEvaluate {
+    publishing {
+        publications {
+            // 定义一个名为 release 的发布配置
+            release(MavenPublication) {
+                // 这里指定要发布的组件（Android 用 release）
+                from components.release
+
+                // groupId / artifactId / version 会决定最终的坐标
+                groupId = 'com.github.karsonluos'
+                artifactId = 'agame-ipay'
+                version = '1.0.3'
+            }
+        }
+
+        // 定义发布仓库为 mavenLocal()
+        repositories {
+            mavenLocal()
+        }
+    }
 }
 
 dependencies {
