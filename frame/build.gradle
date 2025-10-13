@@ -42,9 +42,9 @@ afterEvaluate {
                 from components.release
 
                 // groupId / artifactId / version 会决定最终的坐标
-                groupId = 'com.github.karsonluos'
-                artifactId = 'agame-frame'
-                version = '1.0.3'
+                groupId = 'com.github.karsonluos.agame-common'
+                artifactId = 'frame'
+                version = '1.0.4'
             }
         }
 
