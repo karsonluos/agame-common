@@ -1,0 +1,1 @@
+[![](https://jitpack.io/v/karsonluos/agame-common.svg)](https://jitpack.io/#karsonluos/agame-common)
