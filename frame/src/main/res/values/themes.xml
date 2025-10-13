@@ -1,0 +1,15 @@
+<resources xmlns:tools="http://schemas.android.com/tools">
+
+    <style name="BottomSlideInoutAnimation">
+        <item name="android:windowEnterAnimation">@anim/animation_bottom_enter</item>
+        <item name="android:windowExitAnimation">@anim/animation_bottom_exit</item>
+    </style>
+
+    <style name="TopCornerBottomSheetDialog" parent="Theme.Design.Light.BottomSheetDialog">
+        <item name="bottomSheetStyle">@style/TopCornerBottomSheet</item>
+    </style>
+
+    <style name="TopCornerBottomSheet" parent="Widget.Design.BottomSheet.Modal">
+        <item name="android:background">@drawable/bg_shape_top_corner_20dp</item>
+    </style>
+</resources>

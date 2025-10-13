@@ -1,0 +1,47 @@
+<resources>
+    <string name="dialog_cancel">取消</string>
+    <string name="key_sound">音效</string>
+    <string name="key_bgm">背景音樂</string>
+    <string name="vibrator_feedback">振動反饋</string>
+    <string name="advise_feedback">建議與反饋</string>
+    <string name="privacy_policy">隱私政策</string>
+    <string name="contact_us">聯繫我們</string>
+    <string name="terms_service">服務條款</string>
+    <string name="game_number24">算24點</string>
+    <string name="game_number24_desc">脑力挑战大作战!</string>
+    <string name="game_puzzle">謎題大合集</string>
+    <string name="game_puzzle_desc">經典益智解壓謎題遊戲!</string>
+    <string name="game_1a2b">1A2B</string>
+    <string name="game_1a2b_desc">文曲星經典猜數字遊戲!</string>
+    <string name="game_yukon">育空接龍</string>
+    <string name="game_yukon_desc">最好玩的紙牌接龍合集!</string>
+    <string name="more_our_game">更多我們的遊戲</string>
+    <string name="game_klotski">華容道</string>
+    <string name="game_klotski_desc">中國三國歷史經典邏輯推理遊戲</string>
+    <string name="game_number_klotski">數字華容道</string>
+    <string name="game_number_klotski_desc">唯一一款帶解題過程的數字謎盤</string>
+    <string name="loading">加載中</string>
+    <string name="game_mine_sweeper">掃雷</string>
+    <string name="game_mine_sweeper_desc">解開動腦謎題</string>
+    <string name="game_montana">Montana接龍</string>
+    <string name="game_montana_desc">一款經典的接龍紙牌遊戲</string>
+    <string name="privacy_content">用戶隱私對我們很重要，請同意我們的服務條款和隱私政策後，開始您的謎題大冒險吧！ </string>
+    <string name="privacy_tips">點擊"確定"後，即可繼續使用應用</string>
+    <string name="privacy_policy_keyword">隱私政策</string>
+    <string name="privacy_terms_keyword">服務條款</string>
+    <string name="confirm">確定</string>
+    <string name="browser_not_install">設備沒有安裝瀏覽器</string>
+    <string name="splash_initing_system">正在初始化…</string>
+    <string name="splash_initing_login">正在登錄…</string>
+    <string name="splash_initing_load_snapshot">正在加載遊戲進度…</string>
+
+    <string-array name="week_days">
+        <item>星期一</item>
+        <item>星期二</item>
+        <item>星期三</item>
+        <item>星期四</item>
+        <item>星期五</item>
+        <item>星期六</item>
+        <item>星期日</item>
+    </string-array>
+</resources>

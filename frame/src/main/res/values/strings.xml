@@ -1,0 +1,55 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="dialog_cancel">Cancel</string>
+    <string name="key_sound">Sound</string>
+    <string name="key_bgm">Music</string>
+    <string name="vibrator_feedback">Vibrator</string>
+    <string name="advise_feedback">Advice or feedback</string>
+    <string name="privacy_policy">Privacy Policy</string>
+    <string name="contact_us">Contact Us</string>
+    <string name="terms_service">Terms of Service</string>
+    <string name="game_number24">Math 24</string>
+    <string name="game_number24_desc">Brain competition!</string>
+    <string name="game_puzzle">Puzzle Lover</string>
+    <string name="game_puzzle_desc">Relax Puzzles all in one</string>
+    <string name="game_1a2b">1A2B</string>
+    <string name="game_1a2b_desc">Wonderful brain training game!</string>
+    <string name="game_yukon">Yukon Solitaire</string>
+    <string name="game_yukon_desc">The most fun solitaire collection!</string>
+    <string name="more_our_game">More of our games</string>
+    <string name="game_klotski">Klotski</string>
+    <string name="game_klotski_desc">Classic sliding puzzle game</string>
+    <string name="game_number_klotski">Sliding Number</string>
+    <string name="game_number_klotski_desc">15 puzzle &amp; novice tips</string>
+    <string name="game_mine_sweeper">Minesweeper</string>
+    <string name="game_mine_sweeper_desc">Classic Minesweeper</string>
+    <string name="game_montana">Montana Solitaire</string>
+    <string name="game_montana_desc">A classic solitaire card game</string>
+    <string name="loading">LOADING</string>
+    <string name="privacy_content">We believe User Privacy is very important to us, please agree to our Terms of Service and Privacy Policy, then start your puzzle adventure!</string>
+    <string name="privacy_tips">Click "OK" to start the application.</string>
+    <string name="privacy_policy_keyword">Privacy Policy</string>
+    <string name="privacy_terms_keyword">Terms of Service</string>
+    <string name="confirm">Confirm</string>
+    <string name="browser_not_install">The device does not have a browser installed</string>
+    <string name="splash_initing_system">Initializing</string>
+    <string name="splash_initing_login">Logging In</string>
+    <string name="splash_initing_load_snapshot">Loading Snapshot</string>
+
+    <string-array name="week_days">
+        <!--Monday-->
+        <item>Mon</item>
+        <!--Tuesday-->
+        <item>Tues</item>
+        <!--Wednesday-->
+        <item>Wed</item>
+        <!--Thursday-->
+        <item>Thur</item>
+        <!--Friday-->
+        <item>Fri</item>
+        <!--Saturday-->
+        <item>Sat</item>
+        <!--Sunday-->
+        <item>Sun</item>
+    </string-array>
+</resources>

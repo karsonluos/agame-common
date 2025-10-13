@@ -1,0 +1,77 @@
+plugins {
+    id 'com.android.library'
+    id 'kotlin-android'
+    id 'maven-publish'
+}
+
+android {
+    compileSdk 36
+
+    defaultConfig {
+        minSdk 21
+        targetSdk 36
+
+        testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
+        consumerProguardFiles "consumer-rules.pro"
+    }
+
+    viewBinding { enabled = true }
+
+    buildTypes {
+        release {
+            minifyEnabled false
+            proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
+        }
+    }
+    compileOptions {
+        sourceCompatibility JavaVersion.VERSION_17
+        targetCompatibility JavaVersion.VERSION_17
+    }
+    kotlinOptions {
+        jvmTarget = '17'
+    }
+    namespace 'com.robining.games.frame'
+}
+
+//afterEvaluate {
+//    publishing {
+//        publications {
+//            // 定义一个名为 release 的发布配置
+//            release(MavenPublication) {
+//                // 这里指定要发布的组件（Android 用 release）
+//                from components.release
+//
+//                // groupId / artifactId / version 会决定最终的坐标
+//                groupId = 'com.github.karsonluos'
+//                artifactId = 'mylibrary'
+//                version = '1.0.0'
+//            }
+//        }
+//
+//        // 定义发布仓库为 mavenLocal()
+//        repositories {
+//            mavenLocal()
+//        }
+//    }
+//}
+
+dependencies {
+    implementation libs.androidx.core.ktx
+    implementation libs.androidx.appcompat
+    implementation libs.material
+    testImplementation libs.junit
+    androidTestImplementation libs.androidx.junit
+    androidTestImplementation libs.androidx.espresso.core
+    implementation libs.androidx.startup.runtime
+    api libs.mmkv
+    api libs.kotlinx.coroutines.android
+    api libs.konfetti
+
+    //应用内评价
+    implementation(libs.review)
+    implementation(libs.review.ktx)
+
+    implementation libs.user.messaging.platform
+
+    api(libs.aos.common)
+}

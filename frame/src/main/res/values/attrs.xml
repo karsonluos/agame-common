@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <attr name="setting_main_bg" format="color|reference"/>
+    <attr name="setting_text_color" format="color|reference"/>
+    <attr name="setting_bg" format="color|reference"/>
+    <attr name="setting_divider" format="reference"/>
+</resources>

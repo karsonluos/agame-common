@@ -1,0 +1,55 @@
+[versions]
+agp = "8.13.0"
+aosCommon = "v0.0.12"
+applovin = "13.4.0.0"
+billingKtx = "8.0.0"
+facebook = "6.20.0.1"
+inferAnnotation = "0.18.0"
+konfetti = "1.3.2"
+kotlin = "2.0.21"
+coreKtx = "1.17.0"
+junit = "4.13.2"
+junitVersion = "1.3.0"
+espressoCore = "3.7.0"
+appcompat = "1.7.1"
+kotlinxCoroutinesAndroid = "1.10.2"
+material = "1.13.0"
+activity = "1.11.0"
+constraintlayout = "2.2.1"
+mmkv = "2.2.4"
+playServicesAds = "24.7.0"
+review = "2.0.2"
+startupRuntime = "1.2.0"
+unityAds = "4.16.3"
+unity = "4.16.2.0"
+userMessagingPlatform = "3.2.0"
+
+[libraries]
+androidx-core-ktx = { group = "androidx.core", name = "core-ktx", version.ref = "coreKtx" }
+androidx-startup-runtime = { module = "androidx.startup:startup-runtime", version.ref = "startupRuntime" }
+aos-common = { module = "com.github.karsonluos:aos-common", version.ref = "aosCommon" }
+applovin = { module = "com.google.ads.mediation:applovin", version.ref = "applovin" }
+billing-ktx = { module = "com.android.billingclient:billing-ktx", version.ref = "billingKtx" }
+facebook = { module = "com.google.ads.mediation:facebook", version.ref = "facebook" }
+infer-annotation = { module = "com.facebook.infer.annotation:infer-annotation", version.ref = "inferAnnotation" }
+junit = { group = "junit", name = "junit", version.ref = "junit" }
+androidx-junit = { group = "androidx.test.ext", name = "junit", version.ref = "junitVersion" }
+androidx-espresso-core = { group = "androidx.test.espresso", name = "espresso-core", version.ref = "espressoCore" }
+androidx-appcompat = { group = "androidx.appcompat", name = "appcompat", version.ref = "appcompat" }
+konfetti = { module = "nl.dionsegijn:konfetti", version.ref = "konfetti" }
+kotlinx-coroutines-android = { module = "org.jetbrains.kotlinx:kotlinx-coroutines-android", version.ref = "kotlinxCoroutinesAndroid" }
+material = { group = "com.google.android.material", name = "material", version.ref = "material" }
+androidx-activity = { group = "androidx.activity", name = "activity", version.ref = "activity" }
+androidx-constraintlayout = { group = "androidx.constraintlayout", name = "constraintlayout", version.ref = "constraintlayout" }
+mmkv = { module = "com.tencent:mmkv", version.ref = "mmkv" }
+play-services-ads = { module = "com.google.android.gms:play-services-ads", version.ref = "playServicesAds" }
+review = { module = "com.google.android.play:review", version.ref = "review" }
+review-ktx = { module = "com.google.android.play:review-ktx", version.ref = "review" }
+unity = { module = "com.google.ads.mediation:unity", version.ref = "unity" }
+unity-ads = { module = "com.unity3d.ads:unity-ads", version.ref = "unityAds" }
+user-messaging-platform = { module = "com.google.android.ump:user-messaging-platform", version.ref = "userMessagingPlatform" }
+
+[plugins]
+android-application = { id = "com.android.application", version.ref = "agp" }
+kotlin-android = { id = "org.jetbrains.kotlin.android", version.ref = "kotlin" }
+

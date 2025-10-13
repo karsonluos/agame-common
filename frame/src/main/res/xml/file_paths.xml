@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<paths>
+    <external-cache-path
+        name="external_cache_path"
+        path="./share_temp/" />
+    <cache-path
+        name="cache_path"
+        path="./share_temp/" />
+    <files-path
+        name="file_path"
+        path="./share_temp/" />
+    <external-files-path
+        name="external_file_path"
+        path="./share_temp/" />
+</paths>
