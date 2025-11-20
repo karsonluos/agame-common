@@ -292,6 +292,7 @@ object Ads : IAds {
         }
         container.post {
             val bannerView = AdView(container.context)
+            bannerView.setBackgroundColor(Color.TRANSPARENT)
             val width = container.measuredWidth
             val bannerSize = getBannerAdSize(width)
             bannerView.setAdSize(bannerSize)

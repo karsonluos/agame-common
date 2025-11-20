@@ -4,8 +4,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="?attr/setting_bg"
-    android:fitsSystemWindows="true">
+    android:background="?attr/setting_bg">
 
     <androidx.core.widget.NestedScrollView
         android:layout_width="match_parent"
@@ -15,8 +14,6 @@
         <androidx.appcompat.widget.LinearLayoutCompat
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:paddingTop="15dp"
-            android:paddingBottom="15dp"
             android:orientation="vertical">
 
             <androidx.appcompat.widget.LinearLayoutCompat

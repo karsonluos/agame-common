@@ -5,11 +5,11 @@ plugins {
 }
 
 android {
-    compileSdk 36
+    compileSdk = 36
 
     defaultConfig {
-        minSdk 21
-        targetSdk 36
+        minSdk = 21
+        targetSdk = 36
 
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
         consumerProguardFiles "consumer-rules.pro"
@@ -25,8 +25,8 @@ android {
         sourceCompatibility JavaVersion.VERSION_17
         targetCompatibility JavaVersion.VERSION_17
     }
-    kotlinOptions {
-        jvmTarget = '17'
+    kotlin {
+        jvmToolchain(17)
     }
     namespace 'com.robining.games.gpay'
 }
@@ -42,7 +42,7 @@ afterEvaluate {
                 // groupId / artifactId / version 会决定最终的坐标
                 groupId = 'com.github.karsonluos.agame-common'
                 artifactId = 'gpay'
-                version = '1.0.4'
+                version = "${LIB_VERSION}"
             }
         }
 
