@@ -140,5 +140,7 @@ interface IPay {
         suspend fun empower(productIds: List<String>): Boolean
         fun isConsumed(token: String): Boolean
         fun allUnEmpowerTokens(): List<String>
+
+        fun onRestoredPurchases(productIds : List<String>)
     }
 }

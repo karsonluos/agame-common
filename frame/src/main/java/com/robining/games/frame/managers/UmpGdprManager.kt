@@ -7,26 +7,33 @@ import android.util.Log
 import com.google.android.ump.ConsentDebugSettings
 import com.google.android.ump.ConsentRequestParameters
 import com.google.android.ump.UserMessagingPlatform
-import com.robining.games.frame.BuildConfig
 import java.lang.ref.WeakReference
 
 object UmpGdprManager {
     private val handler = Handler(Looper.getMainLooper())
 
-    fun request(activity: Activity, callback: ((agreed: Boolean) -> Unit)? = null) {
+    fun request(activity: Activity, debugEEADeviceHashedIds : List<String> = emptyList(), callback: ((agreed: Boolean) -> Unit)? = null) {
         val ref = WeakReference(activity)
         if (!isValidReference(ref)) {
             return
         }
 
-        val debugSettings = ConsentDebugSettings.Builder(activity)
-            .setDebugGeography(ConsentDebugSettings.DebugGeography.DEBUG_GEOGRAPHY_EEA)
-            .addTestDeviceHashedId("1EE13FC64E4080073CE7D50EE5BB0561")
-            .build()
+        val debugSettings = if (debugEEADeviceHashedIds.isEmpty()){
+            null
+        }else{
+            ConsentDebugSettings.Builder(activity)
+                .setDebugGeography(ConsentDebugSettings.DebugGeography.DEBUG_GEOGRAPHY_EEA)
+                .apply {
+                    debugEEADeviceHashedIds.forEach {
+                        addTestDeviceHashedId(it)
+                    }
+                }
+                .build()
+        }
 
         val params = ConsentRequestParameters
             .Builder()
-            .setConsentDebugSettings(if (BuildConfig.DEBUG) debugSettings else null)
+            .setConsentDebugSettings(debugSettings)
             .setTagForUnderAgeOfConsent(false)
             .build()
         val consentInformation = UserMessagingPlatform.getConsentInformation(activity)

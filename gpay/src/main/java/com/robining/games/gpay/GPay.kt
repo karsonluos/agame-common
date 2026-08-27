@@ -285,6 +285,7 @@ object GPay : IPay, PurchasesUpdatedListener, BillingClientStateListener {
             ownProductsMutex.withLock {
                 ownProductIds.clear()
                 ownProductIds.addAll(tempOwnProductIds)
+                configuration.onRestoredPurchases(tempOwnProductIds.toList())
                 ownProductIdsLiveData.postValue(ownProductIds)
             }
 
