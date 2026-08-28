@@ -1,11 +1,14 @@
 plugins {
     id 'com.android.library'
-    id 'kotlin-android'
     id 'maven-publish'
 }
 
 android {
-    compileSdk = 36
+    compileSdk = 37
+
+    publishing {
+        singleVariant("release") {}
+    }
 
     defaultConfig {
         minSdk = 23
@@ -33,7 +36,7 @@ android {
     kotlin {
         jvmToolchain(17)
     }
-    namespace 'com.robining.games.ads'
+    namespace = 'com.robining.games.ads'
 }
 
 afterEvaluate {
