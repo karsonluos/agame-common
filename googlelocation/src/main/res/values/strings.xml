@@ -1,0 +1,5 @@
+<resources>
+    <string name="location_provider_name">系统融合定位</string>
+    <string name="location_permission_missing">缺少位置权限</string>
+    <string name="location_provider_unavailable">定位服务不可用</string>
+</resources>

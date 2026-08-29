@@ -1,0 +1,74 @@
+plugins {
+    id 'com.android.library'
+    id 'maven-publish'
+    alias(libs.plugins.kotlin.compose)
+}
+
+android {
+    compileSdk = 37
+
+    publishing {
+        singleVariant("release") {}
+    }
+
+    defaultConfig {
+        minSdk = 23
+        targetSdk = 36
+
+        testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
+        consumerProguardFiles "consumer-rules.pro"
+    }
+
+    buildTypes {
+        release {
+            minifyEnabled false
+            proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
+        }
+    }
+    compileOptions {
+        sourceCompatibility JavaVersion.VERSION_17
+        targetCompatibility JavaVersion.VERSION_17
+    }
+    kotlin {
+        jvmToolchain(17)
+    }
+    buildFeatures {
+        compose = true
+    }
+    namespace = 'com.robining.games.mapboxmap'
+}
+
+afterEvaluate {
+    publishing {
+        publications {
+            // 定义一个名为 release 的发布配置
+            release(MavenPublication) {
+                // 这里指定要发布的组件（Android 用 release）
+                from components.release
+
+                // groupId / artifactId / version 会决定最终的坐标
+                groupId = 'com.github.karsonluos.agame-common'
+                artifactId = 'mapboxmap'
+                version = "${LIB_VERSION}"
+            }
+        }
+
+        // 定义发布仓库为 mavenLocal()
+        repositories {
+            mavenLocal()
+        }
+    }
+}
+
+dependencies {
+    implementation project(":imap")
+    implementation libs.androidx.compose.foundation
+    implementation libs.androidx.compose.ui
+    implementation libs.androidx.compose.ui.graphics
+    implementation platform(libs.androidx.compose.bom)
+    implementation libs.mapbox.maps.ndk27
+    implementation libs.mapbox.maps.compose.ndk27
+    testImplementation libs.junit
+    androidTestImplementation libs.androidx.junit
+    androidTestImplementation libs.androidx.espresso.core
+}

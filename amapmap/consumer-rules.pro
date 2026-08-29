@@ -1,0 +1,2 @@
+-keep interface com.robining.games.map.MapAdapter
+-keep class * implements com.robining.games.map.MapAdapter { public <init>(); }

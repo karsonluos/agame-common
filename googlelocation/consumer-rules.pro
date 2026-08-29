@@ -1,0 +1,2 @@
+-keep interface com.robining.games.location.LocationAdapter
+-keep class * implements com.robining.games.location.LocationAdapter { public <init>(); }

@@ -23,6 +23,11 @@ startupRuntime = "1.2.0"
 unityAds = "4.20.0"
 unity = "4.20.0.1"
 userMessagingPlatform = "4.0.0"
+composeBom = "2026.08.00"
+mapboxMaps = "11.28.0"
+playServicesLocation = "21.4.0"
+lifecycleRuntimeKtx = "2.11.0"
+amap = "11.2.100_loc11.2.100_sea9.8.1"
 
 [libraries]
 androidx-core-ktx = { group = "androidx.core", name = "core-ktx", version.ref = "coreKtx" }
@@ -49,6 +54,17 @@ review-ktx = { module = "com.google.android.play:review-ktx", version.ref = "rev
 unity = { module = "com.google.ads.mediation:unity", version.ref = "unity" }
 unity-ads = { module = "com.unity3d.ads:unity-ads", version.ref = "unityAds" }
 user-messaging-platform = { module = "com.google.android.ump:user-messaging-platform", version.ref = "userMessagingPlatform" }
+androidx-compose-bom = { group = "androidx.compose", name = "compose-bom", version.ref = "composeBom" }
+androidx-compose-ui = { group = "androidx.compose.ui", name = "ui" }
+androidx-compose-ui-graphics = { group = "androidx.compose.ui", name = "ui-graphics" }
+androidx-compose-foundation = { group = "androidx.compose.foundation", name = "foundation" }
+mapbox-maps-ndk27 = { group = "com.mapbox.maps", name = "android-ndk27", version.ref = "mapboxMaps" }
+mapbox-maps-compose-ndk27 = { group = "com.mapbox.extension", name = "maps-compose-ndk27", version.ref = "mapboxMaps" }
+google-play-services-location = { group = "com.google.android.gms", name = "play-services-location", version.ref = "playServicesLocation" }
+androidx-lifecycle-runtime-ktx = { group = "androidx.lifecycle", name = "lifecycle-runtime-ktx", version.ref = "lifecycleRuntimeKtx" }
+androidx-lifecycle-runtime-compose = { group = "androidx.lifecycle", name = "lifecycle-runtime-compose", version.ref = "lifecycleRuntimeKtx" }
+amap-sdk = { group = "com.amap.api", name = "3dmap-location-search", version.ref = "amap" }
 
 [plugins]
 android-application = { id = "com.android.application", version.ref = "agp" }
+kotlin-compose = { id = "org.jetbrains.kotlin.plugin.compose", version.ref = "kotlin" }

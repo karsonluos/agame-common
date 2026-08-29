@@ -13,8 +13,12 @@
             <option value="$PROJECT_DIR$/ads_admob" />
             <option value="$PROJECT_DIR$/app" />
             <option value="$PROJECT_DIR$/frame" />
+            <option value="$PROJECT_DIR$/googlelocation" />
             <option value="$PROJECT_DIR$/gpay" />
+            <option value="$PROJECT_DIR$/ilocation" />
+            <option value="$PROJECT_DIR$/imap" />
             <option value="$PROJECT_DIR$/ipay" />
+            <option value="$PROJECT_DIR$/mapboxmap" />
           </set>
         </option>
         <option name="resolveExternalAnnotations" value="true" />

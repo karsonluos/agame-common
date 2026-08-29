@@ -1,0 +1,5 @@
+<resources>
+    <string name="location_provider_name">Hybrid device location</string>
+    <string name="location_permission_missing">Location permission is missing</string>
+    <string name="location_provider_unavailable">Location service is unavailable</string>
+</resources>
