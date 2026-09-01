@@ -22,6 +22,8 @@ data class LocationDiagnosticSnapshot(
     val registration: String = "尚未请求",
     val availability: String = "尚未返回",
     val updateCount: Int = 0,
+    val startedAtUptimeMillis: Long? = null,
+    val locationMode: String = "尚未返回",
     val liveLocation: DiagnosticLocation? = null,
     val currentLocation: DiagnosticLocation? = null,
     val lastLocation: DiagnosticLocation? = null,

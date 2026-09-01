@@ -7,8 +7,14 @@ The consuming Android application must supply them during manifest merging:
 // app/build.gradle.kts
 android {
     defaultConfig {
-        manifestPlaceholders["AMAP_API_KEY"] = providers.gradleProperty("AMAP_API_KEY").get()
-        manifestPlaceholders["MAPBOX_ACCESS_TOKEN"] = providers.gradleProperty("MAPBOX_ACCESS_TOKEN").get()
+        manifestPlaceholders["AMAP_API_KEY"] =
+            providers.gradleProperty("AMAP_API_KEY").get()
+
+        resValue(
+            "string",
+            "mapbox_access_token",
+            providers.gradleProperty("MAPBOX_ACCESS_TOKEN").get(),
+        )
     }
 }
 ```
@@ -21,9 +27,10 @@ AMAP_API_KEY=your-amap-key
 MAPBOX_ACCESS_TOKEN=your-mapbox-public-token
 ```
 
-If a provider is not used, do not include that provider's AAR. A missing placeholder
-for an included AAR fails the consuming app's manifest merge so a key cannot be
-accidentally omitted.
+If a provider is not used, do not include that provider's AAR. A missing AMap
+placeholder fails the consuming app's manifest merge. The Mapbox AAR contains an
+empty default resource so it can be published independently; the consuming app's
+`resValue` overrides that resource with its own token.
 
 `MAPBOX_DOWNLOADS_TOKEN` is separate from `MAPBOX_ACCESS_TOKEN`: it authorizes Gradle
 to download Mapbox SDK artifacts and must be configured in the consuming project's

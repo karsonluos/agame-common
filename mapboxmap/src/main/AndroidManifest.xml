@@ -3,6 +3,6 @@
     <application>
         <meta-data
             android:name="com.mapbox.token"
-            android:value="${MAPBOX_ACCESS_TOKEN}" />
+            android:value="@string/mapbox_access_token" />
     </application>
 </manifest>

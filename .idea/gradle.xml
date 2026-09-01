@@ -10,14 +10,20 @@
         <option name="modules">
           <set>
             <option value="$PROJECT_DIR$" />
+            <option value="$PROJECT_DIR$/admob_next_gen" />
             <option value="$PROJECT_DIR$/ads_admob" />
+            <option value="$PROJECT_DIR$/amaplocation" />
+            <option value="$PROJECT_DIR$/amapmap" />
             <option value="$PROJECT_DIR$/app" />
             <option value="$PROJECT_DIR$/frame" />
             <option value="$PROJECT_DIR$/googlelocation" />
             <option value="$PROJECT_DIR$/gpay" />
+            <option value="$PROJECT_DIR$/gpgsranking" />
+            <option value="$PROJECT_DIR$/iads" />
             <option value="$PROJECT_DIR$/ilocation" />
             <option value="$PROJECT_DIR$/imap" />
             <option value="$PROJECT_DIR$/ipay" />
+            <option value="$PROJECT_DIR$/iranking" />
             <option value="$PROJECT_DIR$/mapboxmap" />
           </set>
         </option>

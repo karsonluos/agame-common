@@ -54,6 +54,18 @@ object LocationModule {
     ): LocationDiagnostics = adapter.createDiagnostics(context.applicationContext, onSnapshot)
         ?: UnsupportedLocationDiagnostics(onSnapshot)
 
+    /** Create diagnostics for every bundled adapter so a comparison page can show all sources. */
+    fun createAllDiagnostics(
+        context: Context,
+        onSnapshot: (adapterId: String, LocationDiagnosticSnapshot) -> Unit,
+    ): Map<String, LocationDiagnostics> {
+        val appContext = context.applicationContext
+        return adapters.mapNotNull { (id, sourceAdapter) ->
+            sourceAdapter.createDiagnostics(appContext) { snapshot -> onSnapshot(id, snapshot) }
+                ?.let { id to it }
+        }.toMap()
+    }
+
     suspend fun currentLocation(context: Context, timeoutMillis: Long = 10_000L): TrajectoryLocationSample? =
         suspendCancellableCoroutine { continuation ->
             val provider = createProvider(context)

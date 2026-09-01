@@ -25,7 +25,7 @@ class AmapLocationAdapter : LocationAdapter {
 
     private fun initializePrivacy(context: Context) {
         val appContext = context.applicationContext
-        AMapLocationClient.updatePrivacyShow(appContext, true, true)
-        AMapLocationClient.updatePrivacyAgree(appContext, true)
+        runCatching { AMapLocationClient.updatePrivacyShow(appContext, true, true) }
+        runCatching { AMapLocationClient.updatePrivacyAgree(appContext, true) }
     }
 }

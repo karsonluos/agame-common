@@ -50,6 +50,7 @@ object GPay : IPay, PurchasesUpdatedListener, BillingClientStateListener {
 
     private fun connect() {
         if (client.connectionState == BillingClient.ConnectionState.DISCONNECTED) {
+            Log.d(TAG, "start connect billing client")
             client.startConnection(this)
         }
     }
@@ -109,18 +110,7 @@ object GPay : IPay, PurchasesUpdatedListener, BillingClientStateListener {
         withContext(Dispatchers.Main){
             callback?.onPreChecking()
         }
-        val params = if (product.productType == IPay.IProductType.SUBSCRIPTION) {
-            val tokenImpl = token as SubsPayToken
-            BillingFlowParams.ProductDetailsParams.newBuilder()
-                .setProductDetails(tokenImpl.productDetails).setOfferToken(tokenImpl.offerToken)
-                .build()
-
-        } else {
-            val tokenImpl = token as ProductDetails
-            BillingFlowParams.ProductDetailsParams.newBuilder()
-                .setProductDetails(tokenImpl)
-                .build()
-        }
+        val params = token.toBillingProductDetailsParams()
 
         val billingResult = withContext(Dispatchers.Main) {
             callback?.onPaying()
@@ -152,51 +142,112 @@ object GPay : IPay, PurchasesUpdatedListener, BillingClientStateListener {
 
     override suspend fun queryDetails(products: Array<IPay.IProduct>): Result<List<IPay.IProductDetail?>> {
         connect()
+        Log.i(TAG, "query product details: ${products.joinToString { "${it.productId}(${it.gpProductType()})" }}")
         val result = queryProductDetail(*products)
         return if (result.billingResult.responseCode == BillingClient.BillingResponseCode.OK) {
-            val allProductDetails = result.productDetailsList!!
+            val allProductDetails = result.productDetailsList.orEmpty()
+            Log.i(TAG, "query product details success: returned=${allProductDetails.size}, requested=${products.size}")
             val sortedProductDetails = mutableListOf<ProductDetails?>()
             for (product in products) {
-                sortedProductDetails.add(allProductDetails.firstOrNull { it.productId == product.productId && it.productType == product.gpProductType() })
+                val productDetail = allProductDetails.firstOrNull {
+                    it.productId == product.productId && it.productType == product.gpProductType()
+                }
+                if (productDetail == null) {
+                    Log.w(TAG, "product not returned by Google Play: id=${product.productId}, type=${product.gpProductType()}")
+                }
+                sortedProductDetails.add(productDetail)
             }
 
             val details = sortedProductDetails.mapIndexed { index, productDetail ->
                 if (productDetail == null) {
                     null
                 } else if (productDetail.productType == BillingClient.ProductType.SUBS) {
-                    val pricePhases = productDetail.subscriptionOfferDetails!!.map { offerDetail ->
-                        val phase = offerDetail.pricingPhases.pricingPhaseList.first()
-                        val count =
-                            phase.billingPeriod.substring(1, phase.billingPeriod.length - 1)
-                                .toInt()
-                        val unit =
-                            when (phase.billingPeriod.substring(phase.billingPeriod.length - 1)) {
-                                "W" -> IPay.PricePhaseUnit.WEEK
-                                "M" -> IPay.PricePhaseUnit.MONTH
-                                "Y" -> IPay.PricePhaseUnit.YEAR
-                                else -> throw IllegalArgumentException("unkown billingPeriod unit:${phase.billingPeriod}")
-                            }
-                        IPay.PricePhase(
-                            phase.formattedPrice,
-                            count,
-                            unit,
-                            SubsPayToken(productDetail, offerDetail.offerToken)
+                    val offers = productDetail.subscriptionOfferDetails.orEmpty().map { offerDetail ->
+                        val token = SubsPayToken(productDetail, offerDetail.offerToken)
+                        IPay.PayOffer(
+                            offerId = offerDetail.offerId,
+                            basePlanId = offerDetail.basePlanId,
+                            tags = offerDetail.offerTags.toSet(),
+                            kind = if (offerDetail.offerId == null) {
+                                IPay.OfferKind.REGULAR
+                            } else {
+                                IPay.OfferKind.SUBSCRIPTION_OFFER
+                            },
+                            pricePhases = offerDetail.pricingPhases.pricingPhaseList.map {
+                                it.toPayPricePhase(token)
+                            },
+                            token = token,
                         )
                     }
+                    Log.i(
+                        TAG,
+                        "subscription details: id=${productDetail.productId}, offers=${offers.size}, " +
+                            offers.joinToString(prefix = "[", postfix = "]") { offer ->
+                                "basePlan=${offer.basePlanId}, offerId=${offer.offerId ?: "regular"}, " +
+                                    "tags=${offer.tags}, phases=${offer.pricePhases.joinToString { it.priceWithUnit }}"
+                            }
+                    )
                     IPay.SubProductDetail(
                         products[index],
-                        pricePhases = pricePhases,
-                        productDetail.description
+                        pricePhases = offers.firstOrNull()?.pricePhases.orEmpty(),
+                        content = productDetail.description,
+                        offers = offers,
                     )
                 } else {
+                    val offers = productDetail.oneTimePurchaseOfferDetailsList
+                        ?: productDetail.oneTimePurchaseOfferDetails?.let { listOf(it) }
+                        ?: emptyList()
+                    val payOffers = offers.mapNotNull { offerDetail ->
+                        val offerToken = offerDetail.offerToken ?: return@mapNotNull null
+                        val token = OneTimePayToken(productDetail, offerToken)
+                        val discount = offerDetail.discountDisplayInfo
+                        IPay.PayOffer(
+                            offerId = offerDetail.offerId,
+                            purchaseOptionId = offerDetail.purchaseOptionId,
+                            tags = offerDetail.offerTags?.toSet().orEmpty(),
+                            kind = when {
+                                discount != null -> IPay.OfferKind.ONE_TIME_DISCOUNT
+                                offerDetail.preorderDetails != null -> IPay.OfferKind.PREORDER
+                                offerDetail.rentalDetails != null -> IPay.OfferKind.RENTAL
+                                else -> IPay.OfferKind.REGULAR
+                            },
+                            pricePhases = listOf(
+                                IPay.PricePhase(
+                                    priceWithUnit = offerDetail.formattedPrice,
+                                    phase = 1,
+                                    phaseUnit = IPay.PricePhaseUnit.ONE_TIME,
+                                    token = token,
+                                    priceAmountMicros = offerDetail.priceAmountMicros,
+                                    priceCurrencyCode = offerDetail.priceCurrencyCode,
+                                ),
+                            ),
+                            discount = discount?.let {
+                                IPay.Discount(
+                                    amountWithUnit = it.discountAmount?.formattedDiscountAmount,
+                                    percentage = it.percentageDiscount,
+                                )
+                            },
+                            token = token,
+                        )
+                    }
+                    val defaultOffer = payOffers.firstOrNull()
+                    Log.i(
+                        TAG,
+                        "one-time details: id=${productDetail.productId}, offers=${payOffers.size}, " +
+                            payOffers.joinToString(prefix = "[", postfix = "]") { offer ->
+                                "option=${offer.purchaseOptionId}, offerId=${offer.offerId}, kind=${offer.kind}, " +
+                                    "price=${offer.pricePhases.firstOrNull()?.priceWithUnit}, discount=${offer.discount}"
+                            }
+                    )
                     IPay.ProductDetail(
                         products[index],
-                        productDetail.oneTimePurchaseOfferDetails!!.formattedPrice,
-                        productDetail.description,
-                        productDetail
+                        priceWithUnit = defaultOffer?.pricePhases?.firstOrNull()?.priceWithUnit.orEmpty(),
+                        content = productDetail.description,
+                        token = defaultOffer?.token ?: productDetail,
+                        offers = payOffers,
                     )
                 }
-            } ?: emptyList()
+            }
 
             Result.success(details)
         } else {
@@ -479,6 +530,49 @@ object GPay : IPay, PurchasesUpdatedListener, BillingClientStateListener {
         )
     }
 
+    private fun Any.toBillingProductDetailsParams(): BillingFlowParams.ProductDetailsParams =
+        when (this) {
+            is SubsPayToken -> BillingFlowParams.ProductDetailsParams.newBuilder()
+                .setProductDetails(productDetails)
+                .setOfferToken(offerToken)
+                .build()
+
+            is OneTimePayToken -> BillingFlowParams.ProductDetailsParams.newBuilder()
+                .setProductDetails(productDetails)
+                .setOfferToken(offerToken)
+                .build()
+
+            is ProductDetails -> BillingFlowParams.ProductDetailsParams.newBuilder()
+                .setProductDetails(this)
+                .build()
+
+            else -> throw IllegalArgumentException("Unsupported Google Play purchase token: ${this::class.java.name}")
+        }
+
+    private fun ProductDetails.PricingPhase.toPayPricePhase(token: Any): IPay.PricePhase {
+        val billingPeriod = billingPeriod
+        val match = billingPeriodPattern.matchEntire(billingPeriod)
+            ?: throw IllegalArgumentException("Unsupported billingPeriod: $billingPeriod")
+        val count = match.groupValues[1].toInt()
+        val unit = when (match.groupValues[2]) {
+            "D" -> IPay.PricePhaseUnit.DAY
+            "W" -> IPay.PricePhaseUnit.WEEK
+            "M" -> IPay.PricePhaseUnit.MONTH
+            "Y" -> IPay.PricePhaseUnit.YEAR
+            else -> throw IllegalArgumentException("Unsupported billingPeriod unit: $billingPeriod")
+        }
+        return IPay.PricePhase(
+            priceWithUnit = formattedPrice,
+            phase = count,
+            phaseUnit = unit,
+            token = token,
+            priceAmountMicros = priceAmountMicros,
+            priceCurrencyCode = priceCurrencyCode,
+        )
+    }
+
+    private val billingPeriodPattern = Regex("P(\\d+)([DWMY])")
+
     override fun onPurchasesUpdated(
         billingResult: BillingResult,
         purchases: MutableList<Purchase>?
@@ -532,4 +626,5 @@ object GPay : IPay, PurchasesUpdatedListener, BillingClientStateListener {
 }
 
 data class SubsPayToken(val productDetails: ProductDetails, val offerToken: String)
+data class OneTimePayToken(val productDetails: ProductDetails, val offerToken: String)
 class GPayException(val billingResult: BillingResult) : Exception(billingResult.debugMessage)

@@ -1,0 +1,5 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- Overridden by the consuming application's resValue configuration. -->
+    <string name="games_app_id" translatable="false"></string>
+</resources>

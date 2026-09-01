@@ -49,6 +49,8 @@ class GoogleLocationDiagnostics(
     private var currentLocationCancellation: CancellationTokenSource? = null
     private var milestoneTasks = emptyList<Runnable>()
     private var lastGnssSummary: String? = null
+    private var gnssZeroFixWarned = false
+    private var fusedEmptyWarned = false
 
     private val request = LocationRequest.Builder(Priority.PRIORITY_HIGH_ACCURACY, UPDATE_INTERVAL_MILLIS)
         .setMinUpdateIntervalMillis(MIN_UPDATE_INTERVAL_MILLIS)
@@ -100,6 +102,13 @@ class GoogleLocationDiagnostics(
                 lastGnssSummary = summary
                 event("GNSS satellites $summary")
             }
+            if (!gnssZeroFixWarned && status.satelliteCount > 0 && used == 0) {
+                gnssZeroFixWarned = true
+                event(
+                    "GNSS 可见 ${status.satelliteCount} 颗但 0 颗参与解算：当前环境可能无法定位，请到开阔地、关闭省电定位后重试",
+                    warning = true,
+                )
+            }
         }
     }
 
@@ -110,7 +119,11 @@ class GoogleLocationDiagnostics(
         if (started) return
         started = true
         val sessionId = SystemClock.elapsedRealtime().toString(16)
-        snapshot = LocationDiagnosticSnapshot(sessionId = sessionId, running = true)
+        snapshot = LocationDiagnosticSnapshot(
+            sessionId = sessionId,
+            running = true,
+            startedAtUptimeMillis = SystemClock.uptimeMillis(),
+        )
         publish()
         event("FUSED_DIAG session=$sessionId START sdk=${Build.VERSION.SDK_INT} device=${Build.MANUFACTURER}/${Build.MODEL}")
 
@@ -129,6 +142,7 @@ class GoogleLocationDiagnostics(
 
         inspectGooglePlayServices()
         inspectSystemLocation()
+        inspectLocationMode()
         checkLocationSettings()
         queryFusedAvailability()
         queryLastLocation()
@@ -137,6 +151,29 @@ class GoogleLocationDiagnostics(
         requestNativeComparison()
         registerGnssDiagnostics()
         scheduleMilestones()
+        mainHandler.postDelayed(fusedEmptyHint, FUSED_EMPTY_HINT_DELAY_MILLIS)
+        mainHandler.postDelayed(lastLocationRefresher, LAST_LOCATION_REFRESH_MILLIS)
+    }
+
+    private val lastLocationRefresher = object : Runnable {
+        override fun run() {
+            if (!started) return
+            queryLastLocation()
+            mainHandler.postDelayed(this, LAST_LOCATION_REFRESH_MILLIS)
+        }
+    }
+
+    private val fusedEmptyHint = object : Runnable {
+        override fun run() {
+            if (!started) return
+            if (snapshot.updateCount == 0) {
+                event(
+                    "Fused 持续无回调：请检查系统『定位模式=高精度』、『位置信息准确性』，以及应用是否只授了“大致位置”",
+                    warning = true,
+                )
+                fusedEmptyWarned = true
+            }
+        }
     }
 
     override fun stop() {
@@ -146,6 +183,8 @@ class GoogleLocationDiagnostics(
         milestoneTasks = emptyList()
         currentLocationCancellation?.cancel()
         currentLocationCancellation = null
+        mainHandler.removeCallbacks(lastLocationRefresher)
+        mainHandler.removeCallbacks(fusedEmptyHint)
         fusedClient.removeLocationUpdates(fusedCallback)
             .addOnFailureListener { error -> event("Fused remove failed ${error.describeError()}", warning = true) }
         runCatching { locationManager.removeUpdates(nativeListener) }
@@ -182,6 +221,21 @@ class GoogleLocationDiagnostics(
         event("System location $summary")
     }
 
+    private fun inspectLocationMode() {
+        val mode = runCatching {
+            Settings.Secure.getInt(appContext.contentResolver, Settings.Secure.LOCATION_MODE)
+        }.getOrNull()
+        val text = when (mode) {
+            Settings.Secure.LOCATION_MODE_OFF -> "关闭"
+            Settings.Secure.LOCATION_MODE_SENSORS_ONLY -> "仅设备(GPS)定位"
+            Settings.Secure.LOCATION_MODE_BATTERY_SAVING -> "省电(仅网络)定位"
+            Settings.Secure.LOCATION_MODE_HIGH_ACCURACY -> "高精度定位"
+            else -> "未知($mode)"
+        }
+        update { it.copy(locationMode = text) }
+        event("System location mode=$text")
+    }
+
     private fun checkLocationSettings() {
         val settingsRequest = LocationSettingsRequest.Builder().addLocationRequest(request).build()
         settingsClient.checkLocationSettings(settingsRequest)
@@ -197,6 +251,9 @@ class GoogleLocationDiagnostics(
                 val summary = "FAILED code=$statusCode resolvable=$resolvable ${error.describeError()}"
                 update { it.copy(requestSettings = summary) }
                 event("SettingsClient $summary", warning = true)
+                if (resolvable) {
+                    event("定位系统设置需要修复：请到 系统设置→位置→『位置信息准确性/精确位置』开启后再试", warning = true)
+                }
             }
     }
 
@@ -348,6 +405,8 @@ class GoogleLocationDiagnostics(
         const val MIN_UPDATE_INTERVAL_MILLIS = 500L
         const val CURRENT_LOCATION_TIMEOUT_MILLIS = 30_000L
         const val MAX_UI_EVENTS = 30
+        const val LAST_LOCATION_REFRESH_MILLIS = 10_000L
+        const val FUSED_EMPTY_HINT_DELAY_MILLIS = 6_000L
         val MILESTONES_MILLIS = listOf(5_000L, 15_000L, 30_000L, 60_000L)
         val EVENT_TIME_FORMAT: DateTimeFormatter = DateTimeFormatter.ofPattern("HH:mm:ss.SSS")
     }

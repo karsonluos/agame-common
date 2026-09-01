@@ -33,6 +33,13 @@ interface IPay {
         token: Any
     ): Result<Unit>
 
+    /** Starts checkout with a provider-neutral offer returned from [IProductDetail.offers]. */
+    suspend fun startPay(
+        activity: FragmentActivity,
+        product: IProduct,
+        offer: PayOffer,
+    ): Result<Unit> = startPay(activity, product, offer.token)
+
     /**
      * 如果结果为null 表示待上线或已下架
      */
@@ -100,24 +107,60 @@ interface IPay {
         override val product: IProduct,
         val priceWithUnit: String,
         val content: String,
-        val token: Any
+        val token: Any,
+        /** All eligible purchase options, including any channel-specific discounts. */
+        val offers: List<PayOffer> = emptyList(),
     ) : IProductDetail
 
     data class SubProductDetail(
         override val product: IProduct,
         val pricePhases: List<PricePhase>,
-        val content: String
+        val content: String,
+        /** All eligible base plans and promotional offers. */
+        val offers: List<PayOffer> = emptyList(),
     ) : IProductDetail
+
+    /**
+     * A selectable purchase option. Channels without discounts should return one
+     * [OfferKind.REGULAR] offer, so callers never need channel-specific UI logic.
+     */
+    data class PayOffer(
+        val offerId: String? = null,
+        val purchaseOptionId: String? = null,
+        val basePlanId: String? = null,
+        val tags: Set<String> = emptySet(),
+        val kind: OfferKind = OfferKind.REGULAR,
+        val pricePhases: List<PricePhase>,
+        val discount: Discount? = null,
+        val token: Any,
+    )
+
+    data class Discount(
+        val amountWithUnit: String? = null,
+        val percentage: Int? = null,
+    )
+
+    enum class OfferKind {
+        REGULAR,
+        SUBSCRIPTION_OFFER,
+        ONE_TIME_DISCOUNT,
+        PREORDER,
+        RENTAL,
+        UNKNOWN,
+    }
 
     data class PricePhase(
         val priceWithUnit: String,
         val phase: Int,
         val phaseUnit: PricePhaseUnit,
-        val token: Any
+        /** Kept for source compatibility; new callers should pass [PayOffer] to [startPay]. */
+        val token: Any,
+        val priceAmountMicros: Long? = null,
+        val priceCurrencyCode: String? = null,
     )
 
     enum class PricePhaseUnit {
-        SECOND, MINUTE, HOUR, DAY, WEEK, MONTH, YEAR
+        ONE_TIME, SECOND, MINUTE, HOUR, DAY, WEEK, MONTH, YEAR
     }
 
     enum class IProductType {

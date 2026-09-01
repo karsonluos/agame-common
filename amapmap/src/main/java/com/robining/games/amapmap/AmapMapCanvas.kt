@@ -1,6 +1,7 @@
 package com.robining.games.amapmap
 
 import android.content.Context
+import android.view.MotionEvent
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.getValue
@@ -34,6 +35,7 @@ internal class AmapMapController(initialCamera: MapCamera) : AppMapController {
     private var map: AMap? = null
     private var requestedCamera = initialCamera
     private var bearingState by mutableStateOf(initialCamera.bearing)
+    private var userCameraMovedListener: (() -> Unit)? = null
     override val bearing: Double get() = bearingState
 
     fun attach(map: AMap) {
@@ -53,6 +55,14 @@ internal class AmapMapController(initialCamera: MapCamera) : AppMapController {
                 CameraPosition(LatLng(gcj.latitude, gcj.longitude), camera.zoom.toFloat(), camera.pitch.toFloat(), camera.bearing.toFloat()),
             ),
         )
+    }
+
+    override fun setOnUserCameraMoved(listener: (() -> Unit)?) {
+        userCameraMovedListener = listener
+    }
+
+    internal fun notifyUserCameraMoved() {
+        userCameraMovedListener?.invoke()
     }
 }
 
@@ -92,12 +102,18 @@ private class AmapRenderState(private val controller: AmapMapController) {
     private var mapView: TextureMapView? = null
     private var map: AMap? = null
     private var routeLine: Polyline? = null
+    private var touchListener: AMap.OnMapTouchListener? = null
     private val renderedMarkers = mutableListOf<Marker>()
 
     fun create(context: Context): TextureMapView = TextureMapView(context).also { view ->
         view.onCreate(null)
         mapView = view
-        map = view.map.also(controller::attach)
+        map = view.map.also(controller::attach).also { aMap ->
+            touchListener = { event ->
+                if (event.actionMasked == MotionEvent.ACTION_MOVE) controller.notifyUserCameraMoved()
+            }
+            aMap.addOnMapTouchListener(touchListener)
+        }
     }
 
     fun render(
@@ -139,6 +155,8 @@ private class AmapRenderState(private val controller: AmapMapController) {
     fun onResume() = mapView?.onResume() ?: Unit
     fun onPause() = mapView?.onPause() ?: Unit
     fun destroy() {
+        touchListener?.let { listener -> map?.removeOnMapTouchListener(listener) }
+        touchListener = null
         renderedMarkers.clear()
         routeLine = null
         controller.detach()

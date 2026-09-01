@@ -8,6 +8,9 @@ import androidx.compose.ui.Modifier
 interface AppMapController {
     val bearing: Double
     fun moveTo(camera: MapCamera)
+
+    /** 用户手势开始移动地图时回调（拖拽/双指缩放/旋转/双指推移）；程序化 moveTo 不触发。回调在主线程。 */
+    fun setOnUserCameraMoved(listener: (() -> Unit)?)
 }
 
 /** Implemented by a concrete map SDK module and discovered at runtime. */
